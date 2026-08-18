@@ -10,9 +10,14 @@ import java.util.List;
 public class PrescriptionController {
 
     private final PrescriptionRepository prescriptionRepository;
+    private final PrescriptionValidationService validationService;
 
-    public PrescriptionController(PrescriptionRepository prescriptionRepository) {
+    public PrescriptionController(
+            PrescriptionRepository prescriptionRepository,
+            PrescriptionValidationService validationService) {
+
         this.prescriptionRepository = prescriptionRepository;
+        this.validationService = validationService;
     }
 
     @GetMapping
@@ -21,25 +26,40 @@ public class PrescriptionController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Prescription> getPrescriptionById(@PathVariable Long id) {
+    public ResponseEntity<Prescription> getPrescriptionById(
+            @PathVariable Long id) {
+
         return prescriptionRepository.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public Prescription createPrescription(
+    public ResponseEntity<?> createPrescription(
             @RequestBody Prescription prescription) {
-        return prescriptionRepository.save(prescription);
+
+        List<String> errors = validationService.validate(prescription);
+
+        if (!errors.isEmpty()) {
+            return ResponseEntity.badRequest().body(errors);
+        }
+
+        Prescription savedPrescription =
+                prescriptionRepository.save(prescription);
+
+        return ResponseEntity.ok(savedPrescription);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePrescription(@PathVariable Long id) {
+    public ResponseEntity<Void> deletePrescription(
+            @PathVariable Long id) {
+
         if (!prescriptionRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
 
         prescriptionRepository.deleteById(id);
+
         return ResponseEntity.noContent().build();
     }
 }
