@@ -31,7 +31,7 @@ public class PatientController {
     public Patient createPatient(@RequestBody Patient patient) {
         return patientRepository.save(patient);
     }
-   @PutMapping("/{id}")
+@PutMapping("/{id}")
 public ResponseEntity<Patient> updatePatient(@PathVariable Long id, @RequestBody Patient updatedPatient) {
     return patientRepository.findById(id)
             .map(patient -> {
@@ -41,7 +41,7 @@ public ResponseEntity<Patient> updatePatient(@PathVariable Long id, @RequestBody
                 return ResponseEntity.ok(patientRepository.save(patient));
             })
             .orElse(ResponseEntity.notFound().build());
-}    
+}
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePatient(@PathVariable Long id) {
         if (!patientRepository.existsById(id)) {

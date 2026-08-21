@@ -35,7 +35,20 @@ public class PharmacyController {
 
         return pharmacyRepository.save(pharmacy);
     }
+@PutMapping("/{id}")
+public ResponseEntity<Pharmacy> updatePharmacy(
+        @PathVariable Long id,
+        @RequestBody Pharmacy updatedPharmacy) {
 
+    return pharmacyRepository.findById(id)
+            .map(pharmacy -> {
+                pharmacy.setPharmacyName(updatedPharmacy.getPharmacyName());
+                pharmacy.setAddress(updatedPharmacy.getAddress());
+                pharmacy.setPhone(updatedPharmacy.getPhone());
+                return ResponseEntity.ok(pharmacyRepository.save(pharmacy));
+            })
+            .orElse(ResponseEntity.notFound().build());
+}
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePharmacy(
             @PathVariable Long id) {

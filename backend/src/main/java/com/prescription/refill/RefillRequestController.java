@@ -46,7 +46,18 @@ public class RefillRequestController {
 
         return refillRequestRepository.save(refillRequest);
     }
+@DeleteMapping("/{id}")
+public ResponseEntity<Void> deleteRefillRequest(
+        @PathVariable Long id) {
 
+    if (!refillRequestRepository.existsById(id)) {
+        return ResponseEntity.notFound().build();
+    }
+
+    refillRequestRepository.deleteById(id);
+
+    return ResponseEntity.noContent().build();
+}
     @PutMapping("/{id}/status")
     public ResponseEntity<RefillRequest> updateStatus(
             @PathVariable Long id,
