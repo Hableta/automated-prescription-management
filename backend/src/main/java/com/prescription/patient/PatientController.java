@@ -31,7 +31,17 @@ public class PatientController {
     public Patient createPatient(@RequestBody Patient patient) {
         return patientRepository.save(patient);
     }
-
+   @PutMapping("/{id}")
+public ResponseEntity<Patient> updatePatient(@PathVariable Long id, @RequestBody Patient updatedPatient) {
+    return patientRepository.findById(id)
+            .map(patient -> {
+                patient.setFirstName(updatedPatient.getFirstName());
+                patient.setLastName(updatedPatient.getLastName());
+                patient.setDateOfBirth(updatedPatient.getDateOfBirth());
+                return ResponseEntity.ok(patientRepository.save(patient));
+            })
+            .orElse(ResponseEntity.notFound().build());
+}    
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePatient(@PathVariable Long id) {
         if (!patientRepository.existsById(id)) {
